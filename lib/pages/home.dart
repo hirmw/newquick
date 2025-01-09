@@ -31,63 +31,74 @@ class Home extends StatelessWidget {
       //searchbox
           searchbox(),
 
-      //pictures
+      //space
           SizedBox(height: 205),
-          Column(children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Text('Category'),
-            )
-          ]),
 
-          Container(
-            height: 150,
-           // color: Colors.green,
-            child: ListView.separated(
-              itemCount: categories.length,
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20
-              ),
-              separatorBuilder: (context, index) => SizedBox(width: 20),
-              itemBuilder: (context, index) {
-
-                //holds the icon and txt in a column
-                return Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: categories[index].boxcolor.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(16)
-                  ),
-                  //holds the icon in a container and text as children
-                  child:Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(categories[index].iconPath),
-                    ),
-                    Text(
-                      categories[index].name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                        fontSize: 14
-                      ),
-                    ),
-                    ],
-                  )
-                );
-              },
-            ),
-          ),
-        //  const TextField(),
+      //Categories 
+          Categories(),
+          
+      //icons
+          icons(),
+ 
         ]));
+  }
+
+  Container icons() {
+    return Container(
+          height: 150,
+         // color: Colors.green,
+          child: ListView.separated(
+            itemCount: categories.length,
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20
+            ),
+            separatorBuilder: (context, index) => SizedBox(width: 20),
+            itemBuilder: (context, index) {
+
+              //holds the icon and txt in a column
+              return Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  color: categories[index].boxcolor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(16)
+                ),
+                //holds the icon in a container and text as children
+                child:Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(categories[index].iconPath),
+                  ),
+                  Text(
+                    categories[index].name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                      fontSize: 14
+                    ),
+                  ),
+                  ],
+                )
+              );
+            },
+          ),
+        );
+  }
+
+  Column Categories() {
+    return Column(children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text('Category'),
+          )
+        ]);
   }
 
   Container searchbox() {
