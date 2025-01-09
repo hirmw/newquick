@@ -1,5 +1,7 @@
 //import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 //import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:january/models/category_model.dart';
@@ -22,30 +24,64 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     _getCategories();
     return Scaffold(
+      //appbar
         appBar: appbar(),
         body: Column(children: [
+
+      //searchbox
           searchbox(),
-          SizedBox(height: 105),
+
+      //pictures
+          SizedBox(height: 205),
           Column(children: [
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Text('Category'),
             )
           ]),
+
           Container(
             height: 150,
-            //color: Colors.green,
+           // color: Colors.green,
             child: ListView.separated(
               itemCount: categories.length,
               scrollDirection: Axis.horizontal,
-              separatorBuilder: (context, index) => SizedBox(width: 25),
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20
+              ),
+              separatorBuilder: (context, index) => SizedBox(width: 20),
               itemBuilder: (context, index) {
+
+                //holds the icon and txt in a column
                 return Container(
-                  //height: 50,
                   width: 100,
                   decoration: BoxDecoration(
-                    color: categories[index].boxcolor
+                    color: categories[index].boxcolor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16)
                   ),
+                  //holds the icon in a container and text as children
+                  child:Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: SvgPicture.asset(categories[index].iconPath),
+                    ),
+                    Text(
+                      categories[index].name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black,
+                        fontSize: 14
+                      ),
+                    ),
+                    ],
+                  )
                 );
               },
             ),
