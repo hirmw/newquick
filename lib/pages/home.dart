@@ -1,8 +1,6 @@
-//import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-//import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:january/models/category_model.dart';
 
@@ -10,14 +8,8 @@ import 'package:january/models/category_model.dart';
 class Home extends StatelessWidget {
   Home({super.key});
 
-  List<CategoryModel> categories = [];
-
-  void _getCategories() {
-    categories = CategoryModel.getCategories();
-  }
-
-  void initState(){
-    _getCategories();
+  Future<List<CategoryModel>> _getCategories() async {
+    return await CategoryModel.getCategories();
   }
 
   @override
@@ -27,38 +19,43 @@ class Home extends StatelessWidget {
       //appbar
         appBar: appbar(),
         body: Column(children: [
-
       //searchbox
           searchbox(),
-
       //space
           SizedBox(height: 205),
-
       //Categories 
           Categories(),
-          
       //icons
           icons(),
- 
         ]));
   }
 
   Container icons() {
-    return Container(
-          height: 150,
-         // color: Colors.green,
-          child: ListView.separated(
-            itemCount: categories.length,
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(
-              left: 20,
-              right: 20
-            ),
-            separatorBuilder: (context, index) => SizedBox(width: 20),
-            itemBuilder: (context, index) {
 
-              //holds the icon and txt in a column
-              return Container(
+    return Container(
+        height: 150,
+         // color: Colors.green,
+
+        child: FutureBuilder<List<CategoryModel>>(
+        future: _getCategories(),  // Future that fetches the categories
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();  // Show loading indicator
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (snapshot.hasData) {
+            // Handle your categories data here, for example:
+            List<CategoryModel> categories = snapshot.data!;
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              itemBuilder: (context, index) 
+              
+              {
+
+             return Container(
                 width: 100,
                 decoration: BoxDecoration(
                   color: categories[index].boxcolor.withOpacity(0.3),
@@ -85,11 +82,17 @@ class Home extends StatelessWidget {
                     ),
                   ),
                   ],
-                )
-              );
-            },
-          ),
-        );
+                ),
+     );
+
+               // return Text(categories[index].name);
+              },
+            );
+          }
+          return const Text('No categories found.');
+        },
+      ),
+    );
   }
 
   Column Categories() {
