@@ -3,6 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:january/models/category_model.dart';
+import 'package:january/models/Album.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+
 
 // ignore: must_be_immutable
 class Home extends StatelessWidget {
@@ -12,22 +17,92 @@ class Home extends StatelessWidget {
     return await CategoryModel.getCategories();
   }
 
+Future<List<Album>> fetchAlbum() async {
+  final response = await http
+      .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/'));
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+
+    //  List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
+    // return jsonList.map((json) => Album.fromJson(json as Map<String, dynamic>)).toList();
+
+    final List jsonList = jsonDecode(response.body);
+    return jsonList.map<Album>((json) => Album.fromJson(json)).toList();
+
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load albums');
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     _getCategories();
+   
     return Scaffold(
       //appbar
         appBar: appbar(),
-        body: Column(children: [
-      //searchbox
-          searchbox(),
-      //space
-          SizedBox(height: 205),
-      //Categories 
-          Categories(),
-      //icons
-          icons(),
-        ]));
+    body: SingleChildScrollView(
+      child: Column(children: [
+        //searchbox
+        searchbox(),
+        //space
+        SizedBox(height: 20),
+        //Categories 
+        Categories(),
+        //icons
+        icons(),
+        //space
+        SizedBox(height: 20),
+        //list
+        ListofAblums()
+      ],
+      ),
+    ),
+    );
+  }
+
+  FutureBuilder<List<Album>> ListofAblums() {
+    return FutureBuilder<List<Album>>(
+      future: fetchAlbum(), // Assuming you have a method to fetch a list of albums
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Show loading indicator
+        }
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (snapshot.hasData) {
+          List<Album> albums = snapshot.data!;
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5, // Adjust the height as needed
+            child: SingleChildScrollView(
+              child: Column(
+                children: albums.map((album) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 128, 172, 193).withOpacity(0.3),
+                      border: Border.all(color: Color.fromARGB(255, 124, 165, 129)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Text(album.title),
+                        // Add more widgets here to display other album properties
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          );
+        }
+        return const Text('No albums found.');
+      },
+    );
   }
 
   Container icons() {
@@ -52,7 +127,6 @@ class Home extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: categories.length,
               itemBuilder: (context, index) 
-              
               {
 
              return Container(
